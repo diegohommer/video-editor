@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 		imshow("Original frame", frame);
 
 		namedWindow("Edited_Frame", WINDOW_AUTOSIZE);
-		// Conditional Trackbar display
+		// Conditional Trackbar display (if 'gaussian' or 'brightness' or 'contrast')
 		if (configs[0] || configs[3] || configs[4])
 		{
 			if (!hasTrackbar)
@@ -60,6 +60,7 @@ int main(int argc, char** argv)
 			{
 				setTrackbarPos("Value", "Edited_Frame", 0);
 				resetTrackbar = false;
+				value = 0;
 			}
 		}else
 		{
@@ -70,6 +71,7 @@ int main(int argc, char** argv)
 				destroyWindow("Edited_Frame");
 				namedWindow("Edited_Frame", WINDOW_AUTOSIZE);
 				hasTrackbar = false;
+				value = 0;
 			}
 		}
 		imshow("Edited_Frame", edited_frame);
@@ -80,16 +82,19 @@ int main(int argc, char** argv)
 		{
 			if (!initializedRecording)
 			{
+				// Initialize MJPG recording 
 				int fourcc = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
 				std::string file_name = "recording.avi";
 				int fps = 5;
 				Size frame_size(640, 480);
 				output.open(file_name, fourcc, fps, frame_size);
 				initializedRecording = true;
+				std::cout << "\nStarted recording";
 			}
 			output.write(edited_frame);
 		}else if (initializedRecording)
 		{
+			// End and save recording file
 			output.release();
 			initializedRecording = false;
 			std::cout << "\nFinished recording\n";

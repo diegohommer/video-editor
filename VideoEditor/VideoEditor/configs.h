@@ -11,8 +11,8 @@ void print_configs()
 	std::cout << "N or n : Negative\n";
 	std::cout << "Y or y : toggle graYscale\n";
 	std::cout << "H or h : toggle resize to Half of each dimension\n";
-	std::cout << "R or r : Rotate video frames\n";
-	std::cout << "M or m : Mirror video frames\n";
+	std::cout << "R or r : Rotate video\n";
+	std::cout << "F or f : Flip video\n";
 	std::cout << "V or v : toggle Video recording\n";
 	std::cout << "1 : Switch between positive and negative bias in brightness enhancement\n";
 	std::cout << "2 : Switch between clockwise and counterclockwise rotation\n";
@@ -81,15 +81,15 @@ void update_configs(std::vector<bool>& configs, std::vector<bool>& alts, int key
 			configs[7] = !configs[7];
 			break;
 
-		// Redimension option
+		// Rotate option
 		case 'R':
 		case 'r':
 			configs[8] = !configs[8];
 			break;
 
-		// Redimension option
-		case 'M':
-		case 'm':
+		// Flip option
+		case 'F':
+		case 'f':
 			configs[9] = !configs[9];
 			break;
 
@@ -123,7 +123,7 @@ void check_configs(std::vector<bool>& configs, Mat* edited_frame, int trackbar_v
 	{
 		Mat grayscaleImage;
 		cvtColor(*edited_frame, grayscaleImage, COLOR_BGR2GRAY);
-		*edited_frame = grayscaleImage;
+		cvtColor(grayscaleImage, *edited_frame, COLOR_GRAY2BGR);
 	}
 
 	// Video redimension option
@@ -149,27 +149,31 @@ void check_configs(std::vector<bool>& configs, Mat* edited_frame, int trackbar_v
 
 		if (!alts[1])
 		{
+			// Clockwise rotation
 			rotate(*edited_frame, rotated_frame, ROTATE_90_CLOCKWISE);
 		}
 		else
 		{
+			// Counterclockwise rotation
 			rotate(*edited_frame, rotated_frame, ROTATE_90_COUNTERCLOCKWISE);
 		}
 
 		*edited_frame = rotated_frame;
 	}
 
-	// Video mirroring option
+	// Video flipping option
 	if (configs[9])
 	{
 		Mat mirror_frame;
 
 		if (!alts[2])
 		{
+			// Horizontal flip 
 			flip(*edited_frame, mirror_frame, 0);
 		}
 		else
 		{
+			// Vertical flip
 			flip(*edited_frame, mirror_frame, 1);
 		}
 
@@ -208,7 +212,7 @@ void check_configs(std::vector<bool>& configs, Mat* edited_frame, int trackbar_v
 		Canny(*edited_frame, edges, 50, 80);
 
 		// Copy the edges frame to the original edited_frame
-		*edited_frame = edges;
+		cvtColor(edges, *edited_frame, COLOR_GRAY2BGR);
 	}
 
 
